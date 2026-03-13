@@ -31,9 +31,9 @@ function updateFervex(drug) {
   drug.benefit = clamp(drug.benefit + increase, 0, 50);
 }
 
-function updateNormalDrug(drug) {
+function updateNormalDrug(drug, degradeRate = 1) {
   drug.expiresIn -= 1;
-  const decrease = drug.expiresIn < 0 ? 2 : 1;
+  const decrease = drug.expiresIn < 0 ? degradeRate * 2 : degradeRate;
   drug.benefit = clamp(drug.benefit - decrease, 0, 50);
 }
 
@@ -44,14 +44,16 @@ export class Pharmacy {
 
   updateDrug(drug) {
     if (drug.name === "Magic Pill") return;
-
+    
     switch (drug.name) {
       case "Herbal Tea":
         return updateHerbalTea(drug);
       case "Fervex":
         return updateFervex(drug);
+      case "Dafalgan":
+        return updateNormalDrug(drug, 2);
       default:
-        return updateNormalDrug(drug);
+        return updateNormalDrug(drug, 1);
     }
   }
 

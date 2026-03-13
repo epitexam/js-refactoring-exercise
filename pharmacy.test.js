@@ -92,4 +92,30 @@ describe("Pharmacy", () => {
       );
     });
   });
+
+  describe("Dafalgan", () => {
+    it("should decrease benefit by 2 each day", () => {
+      expect(new Pharmacy([new Drug("Dafalgan", 5, 10)]).updateBenefitValue()).toEqual(
+        [new Drug("Dafalgan", 4, 8)]
+      );
+    });
+
+    it("should decrease benefit by 4 after expiration", () => {
+      expect(new Pharmacy([new Drug("Dafalgan", 0, 10)]).updateBenefitValue()).toEqual(
+        [new Drug("Dafalgan", -1, 6)]
+      );
+    });
+
+    it("should never let benefit go below 0", () => {
+      expect(new Pharmacy([new Drug("Dafalgan", 5, 1)]).updateBenefitValue()).toEqual(
+        [new Drug("Dafalgan", 4, 0)]
+      );
+    });
+
+    it("should never let benefit go below 0 after expiration", () => {
+      expect(new Pharmacy([new Drug("Dafalgan", -1, 3)]).updateBenefitValue()).toEqual(
+        [new Drug("Dafalgan", -2, 0)]
+      );
+    });
+  });
 });
