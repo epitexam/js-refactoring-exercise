@@ -10,56 +10,48 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+function updateHerbalTea(drug) {
+  drug.expiresIn -= 1;
+  const increase = drug.expiresIn < 0 ? 2 : 1;
+  drug.benefit = clamp(drug.benefit + increase, 0, 50);
+}
+
+function updateFervex(drug) {
+  drug.expiresIn -= 1;
+  if (drug.expiresIn < 0) {
+    drug.benefit = 0;
+    return;
+  }
+  let increase = 1;
+  if (drug.expiresIn < 5) {
+    increase = 3;
+  } else if (drug.expiresIn < 10) {
+    increase = 2;
+  }
+  drug.benefit = clamp(drug.benefit + increase, 0, 50);
+}
+
+function updateNormalDrug(drug) {
+  drug.expiresIn -= 1;
+  const decrease = drug.expiresIn < 0 ? 2 : 1;
+  drug.benefit = clamp(drug.benefit - decrease, 0, 50);
+}
+
 export class Pharmacy {
   constructor(drugs = []) {
     this.drugs = drugs;
   }
 
   updateDrug(drug) {
-    if (drug.name != "Herbal Tea" && drug.name != "Fervex") {
-      if (drug.benefit > 0) {
-        if (drug.name != "Magic Pill") {
-          drug.benefit = clamp(drug.benefit - 1, 0, 50);
-        }
-      }
-    } else {
-      if (drug.benefit < 50) {
-        drug.benefit = clamp(drug.benefit + 1, 0, 50);
-        if (drug.name == "Fervex") {
-          if (drug.expiresIn < 11) {
-            if (drug.benefit < 50) {
-              drug.benefit = clamp(drug.benefit + 1, 0, 50);
-            }
-          }
-          if (drug.expiresIn < 6) {
-            if (drug.benefit < 50) {
-              drug.benefit = clamp(drug.benefit + 1, 0, 50);
-            }
-          }
-        }
-      }
-    }
+    if (drug.name === "Magic Pill") return;
 
-    if (drug.name != "Magic Pill") {
-      drug.expiresIn = drug.expiresIn - 1;
-    }
-
-    if (drug.expiresIn < 0) {
-      if (drug.name != "Herbal Tea") {
-        if (drug.name != "Fervex") {
-          if (drug.benefit > 0) {
-            if (drug.name != "Magic Pill") {
-              drug.benefit = clamp(drug.benefit - 1, 0, 50);
-            }
-          }
-        } else {
-          drug.benefit = 0;
-        }
-      } else {
-        if (drug.benefit < 50) {
-          drug.benefit = clamp(drug.benefit + 1, 0, 50);
-        }
-      }
+    switch (drug.name) {
+      case "Herbal Tea":
+        return updateHerbalTea(drug);
+      case "Fervex":
+        return updateFervex(drug);
+      default:
+        return updateNormalDrug(drug);
     }
   }
 
